@@ -1,0 +1,12 @@
+name: Expandable
+description: Expand properties with values
+author: https://github.com/xiangweilee
+requirements: []
+configuration:
+  properties:
+    files:
+      type: array
+    directories:
+      type: array
+    properties:
+      type: object
