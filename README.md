@@ -10,7 +10,7 @@ Add the following to your `pipeline.yml`:
 steps:
   - command: ls
     plugins:
-      seekasia/expandable#v1.0.0:
+      xwlee/expandable#v1.0.0:
         files:
           - /path/to/file/1
           - /path/to/file/2
