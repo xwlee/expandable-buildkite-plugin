@@ -1,4 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-env
+while IFS="=" read -r name _
+do
+  if [[ $name =~ ^(BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES_) ]]
+  then
+    echo ${!name:-}
+  fi
+done < <(env | sort)
