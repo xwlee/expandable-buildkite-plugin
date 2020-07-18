@@ -1,14 +1,4 @@
 #!/bin/bash
 set -euo pipefail
 
-FILES="$BUILDKITE_PLUGIN_EXPANDABLE_FILES"
-DIRECTORIES="$BUILDKITE_PLUGIN_EXPANDABLE_DIRECTORIES"
-PROPERTIES="$BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES"
-
-echo "-----------------------------------------------"
-echo $FILES
-echo "-----------------------------------------------"
-echo $DIRECTORIES
-echo "-----------------------------------------------"
-echo $PROPERTIES
-echo "-----------------------------------------------"
+env

@@ -1,7 +1,8 @@
 name: Expandable
 description: Expand properties with values
-author: https://github.com/xiangweilee
-requirements: []
+author: https://github.com/xwlee
+requirements:
+  - docker
 configuration:
   properties:
     files:
@@ -10,3 +11,4 @@ configuration:
       type: array
     properties:
       type: object
+  required: []
