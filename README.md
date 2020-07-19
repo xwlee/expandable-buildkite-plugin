@@ -8,18 +8,20 @@ Add the following to your `pipeline.yml`:
 
 ```yml
 steps:
-  - command: ls
-    plugins:
+  - plugins:
       - xwlee/expandable#v1.0.0:
           files:
-            - /path/to/file/1
-            - /path/to/file/2
+            - /path/to/file/a.txt
+            - /path/to/file/b.txt
           directories:
-            - /path/1
-            - /path/2
+            - /path/a
+            - /path/b
           properties:
-            Hirer.login_id: ENV.login_id # env value
-            Hirer.password: ENV.password # env value
-            Debug.level: error # literal value
-
+            HIRER_LOGIN_ID: ENV.login_id # env value
+            HIRER_PASSWORD: ENV.password # env value
+            LOG_LEVEL: error # string value
 ```
+
+# License
+
+MIT (see [LICENSE](LICENSE))
