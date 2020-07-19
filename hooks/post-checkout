@@ -1,10 +1,38 @@
 #!/bin/bash
 set -euo pipefail
 
-while IFS="=" read -r name _
-do
-  if [[ $name =~ ^(BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES_) ]]
-  then
-    echo ${!name:-}
+declare -a properties
+declare -a files
+declare -a directories
+
+# Parse env
+while IFS="=" read -r name _ ; do
+  if [[ $name =~ ^(BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES_) ]] ;then
+    key=$(echo "${name}" | sed 's/BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES_//')
+    value=${!name:-}
+    properties+=("${key}=${value}")
+  elif [[ $name =~ ^(BUILDKITE_PLUGIN_EXPANDABLE_FILES_) ]] ; then
+    files+=(${!name:-})
+  elif [[ $name =~ ^(BUILDKITE_PLUGIN_EXPANDABLE_DIRECTORIES_) ]] ; then
+    directories+=(${!name:-})
   fi
 done < <(env | sort)
+
+# Replace files
+if [ ${#files[@]} -ne 0 ] ; then
+  for file in "${files[@]}" ; do 
+    echo "Replacing ${file}"
+    for property in "${properties[@]}" ; do 
+      IFS='='
+      read -r key value <<< "$property"
+      sed -i "s/${key}/${value}/g" "${file}"
+    done
+  done
+fi
+
+# Replace directories
+# if [ ${#directories[@]} -ne 0 ] ; then
+#   for directory in "${directories[@]}" ; do 
+#     echo "$directory"
+#   done
+# fi
