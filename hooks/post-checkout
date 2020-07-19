@@ -7,7 +7,7 @@ declare -a directories
 
 # Parse env
 while IFS="=" read -r name _ ; do
-  if [[ $name =~ ^(BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES_) ]] ;then
+  if [[ $name =~ ^(BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES_) ]] ; then
     key=$(echo "${name}" | sed 's/BUILDKITE_PLUGIN_EXPANDABLE_PROPERTIES_//')
     value=${!name:-}
     properties+=("${key}=${value}")
@@ -18,21 +18,38 @@ while IFS="=" read -r name _ ; do
   fi
 done < <(env | sort)
 
-# Replace files
+expand() {
+  echo "Replacing $1"
+  for property in "${properties[@]}" ; do
+    IFS='=' read -r key value <<< "$property"
+    # Handle env value
+    if [[ $value =~ ^(ENV[.]) ]] ; then
+      IFS='.' read -r _ value <<< "$value"
+      value=${!value:-} # Expand env value
+    fi
+    # Only replace when value not empty
+    if [[ ! -z $value ]] ; then
+      if [[ -f $1 ]] ; then
+        # Handle file
+        sed -i '' "s/%${key}%/${value}/g" "$1"
+      elif [[ -d $1 ]] ; then
+        # Handle directory
+        find $1 -type f -print0 | xargs -0 sed -i '' "s/%${key}%/${value}/g"
+      fi
+    fi
+  done
+}
+
+# Expand files
 if [ ${#files[@]} -ne 0 ] ; then
   for file in "${files[@]}" ; do 
-    echo "Replacing ${file}"
-    for property in "${properties[@]}" ; do 
-      IFS='='
-      read -r key value <<< "$property"
-      sed -i '' "s/%${key}%/${value}/g" "${file}"
-    done
+    expand $file
   done
 fi
 
-# Replace directories
-# if [ ${#directories[@]} -ne 0 ] ; then
-#   for directory in "${directories[@]}" ; do 
-#     echo "$directory"
-#   done
-# fi
+# Expand directories
+if [ ${#directories[@]} -ne 0 ] ; then
+  for directory in "${directories[@]}" ; do
+    expand $directory
+  done
+fi
